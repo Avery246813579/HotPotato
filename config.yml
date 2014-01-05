@@ -1,0 +1,22 @@
+# Plugin info.
+prefix: HotPotato
+
+# Players.
+minPlayers: 6
+maxPlayers: 12
+
+# Timers.
+lobbyTimer: 120
+waitTimer: 10
+loadingTimer: 10
+endTimer: 10
+blowupTimer: 15
+
+# Game Info.
+xpTimer: true
+spawnBack: true
+saveHealth: true
+flyinLobby: false
+muteChatOnLoad: true
+shootInAirOnRemove: true
+announceOnDeath: true

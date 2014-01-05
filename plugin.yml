@@ -1,0 +1,36 @@
+name: HotPotato
+main: me.avery246813579.hotpotato.HotPotato
+version: 1.0.0
+description: Hot Potato in real Minecraft.
+commands:
+  hotpotato:
+    description: Hot Potato Command.
+  hp:
+    description: Hot Potato Command.
+permissions:
+    hotpotato.user:
+        description: Grants the player all user commands.
+        default: true
+        children:
+            hotpotato.join: true
+    hotpotato.admin:
+        description: Grants the player all admin commands.
+        default: op
+        children:
+            hotpotato.user: true
+            hotpotato.create: true
+            hotpotato.update: true
+            hotpotato.enable: true
+            hotpotato.disable: true
+    hotpotato.join:
+        description: Allows the user to join a arena.
+    hotpotato.create:
+        description: Allows the user to run the set command.
+    hotpotato.update:
+        description: Allows the user to run the set command.
+    hotpotato.enable:
+        description: Allows the user to run the set command.
+    hotpotato.disable:
+        description: Allows the user to run the set command.
+    hotpotato.start:
+        description: Allows the user to run the set command.
