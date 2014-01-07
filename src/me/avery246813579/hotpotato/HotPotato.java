@@ -11,8 +11,10 @@ import me.avery246813579.hotpotato.handlers.CommandHandler;
 import me.avery246813579.hotpotato.handlers.ConfigurationHandler;
 import me.avery246813579.hotpotato.handlers.FileHandler;
 import me.avery246813579.hotpotato.handlers.FireworkHandler;
+import me.avery246813579.hotpotato.handlers.SignHandler;
 import me.avery246813579.hotpotato.listeners.BlockListener;
 import me.avery246813579.hotpotato.listeners.PlayerListener;
+import me.avery246813579.hotpotato.listeners.SignListener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,6 +32,8 @@ public class HotPotato extends JavaPlugin{
 	private CommandHandler cm = new CommandHandler(this);
 	private FileHandler fh = new FileHandler(this);
 	private GameCreator gc = new GameCreator(this);
+	@SuppressWarnings("unused")
+	private SignHandler sh = new SignHandler(this);
 	
 	/** Lists **/
 	private List<Player> inArena = new ArrayList<Player>();
@@ -54,11 +58,16 @@ public class HotPotato extends JavaPlugin{
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new BlockListener(this), this);
 		pm.registerEvents(new PlayerListener(this), this);
+		pm.registerEvents(new SignListener(this), this);
+		
+		/** Updates signs **/
+        SignHandler.loadSigns();
+        SignHandler.updateSigns();
 	}
 	
 	@Override
 	public void onDisable() {
-
+		SignHandler.saveSigns();
 	}
 	
 	public void enableArenas(){

@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import me.avery246813579.hotpotato.HotPotato;
+import me.avery246813579.hotpotato.handlers.SignHandler;
 import me.avery246813579.hotpotato.timers.BlowupTimer;
 import me.avery246813579.hotpotato.timers.EndTimer;
 import me.avery246813579.hotpotato.timers.LobbyTimer;
@@ -51,6 +52,7 @@ public class GameManager {
 		LobbyTimer lt = new LobbyTimer(plugin, this);
 		this.setLt(lt);
 		lt.init();
+		SignHandler.updateSigns();
 	}
 	
 	public void joinGame(Player player){
@@ -103,6 +105,8 @@ public class GameManager {
 			player.setFlySpeed(0.1f);
 			player.setFlying(false);
 		}
+		
+		SignHandler.updateSigns();
 	}
 	
 	public void loadArena(){
@@ -135,6 +139,9 @@ public class GameManager {
 			player.sendMessage("");
 			player.sendMessage(ChatColor.GOLD + "-=- -=-=- -=-=-=- -=-=- -=-");		
 		}
+		
+		this.inGame = true;
+		SignHandler.updateSigns();
 	}
 	
 	public void loadGame(){
@@ -300,6 +307,8 @@ public class GameManager {
 		for(Player playerz : players){
 			playerz.showPlayer(player);
 		}		
+		
+		SignHandler.updateSigns();
 	}
 	
 	public void addSpec(Player player){
