@@ -1,6 +1,6 @@
 name: HotPotato
 main: me.avery246813579.hotpotato.HotPotato
-version: 1.0.0
+version: 1.0.1
 description: Hot Potato in real Minecraft.
 commands:
   hotpotato:
@@ -34,3 +34,5 @@ permissions:
         description: Allows the user to run the set command.
     hotpotato.start:
         description: Allows the user to run the set command.
+    hotpotato.signs:
+        description: Allows the user to create hot potato signs.

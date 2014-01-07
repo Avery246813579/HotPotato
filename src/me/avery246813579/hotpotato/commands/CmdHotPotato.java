@@ -66,8 +66,12 @@ public class CmdHotPotato implements CommandExecutor{
 	            GameManager gm = plugin.getGameManager(arena);
 
 	            if (plugin.getGames().contains(gm)) {
-	                plugin.getServer().getScheduler().cancelTask(gm.getLt().t);
-	            	gm.loadArena();
+	            	if(!gm.isInGame()){
+		                plugin.getServer().getScheduler().cancelTask(gm.getLt().t);
+		            	gm.loadArena();
+	            	}else{
+	            		plugin.sendMessage(player, ChatColor.RED + "Arena is in game!");
+	            	}
 	            } else {
 	                plugin.sendMessage(player, ChatColor.RED + "Arena not found.");
 	            }
