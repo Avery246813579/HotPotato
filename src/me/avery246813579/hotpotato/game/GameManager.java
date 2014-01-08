@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -278,7 +279,11 @@ public class GameManager {
 		player.setFlySpeed(0.1f);
 		player.setFlying(true);
 		winner = player;
-		plugin.sendMessage(player, "Prizes will be added next update!");
+
+		if(plugin.getConfigHandler().isEconomyReward()){
+			HotPotato.economy.depositPlayer(player.getName(), plugin.getConfigHandler().getRewardAmount());
+		}
+		
 		announceWinner();
 		
 		EndTimer et = new EndTimer(plugin, this);
@@ -297,7 +302,7 @@ public class GameManager {
 	
 	public void removePlayer(Player player){
 		findGamePlayer(player).removePlayer();
-
+		
 		if(players.contains(player))
 			players.remove(player);
 		if(alive.contains(player))
@@ -307,6 +312,25 @@ public class GameManager {
 		for(Player playerz : players){
 			playerz.showPlayer(player);
 		}		
+		
+		if(winner == player){
+			if(!plugin.getConfigHandler().getCommandsOnWin().isEmpty()){
+				return;
+			}
+			
+			for(String s : plugin.getConfigHandler().getCommandsOnWin()){
+				if(s.contains("{PLAYER}")){
+					s.replaceAll("{PLAYER}", player.getName());
+				}
+				
+				if(s.contains("{ARENA}")){
+					s.replace("{ARENA}", game.getArenaName());
+				}
+				
+				Bukkit.dispatchCommand(plugin.getServer().getConsoleSender(), s);
+			}
+			
+		}
 		
 		SignHandler.updateSigns();
 	}

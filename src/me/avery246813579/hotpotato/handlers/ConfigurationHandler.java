@@ -1,5 +1,8 @@
 package me.avery246813579.hotpotato.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.avery246813579.hotpotato.HotPotato;
 
 public class ConfigurationHandler {
@@ -18,6 +21,7 @@ public class ConfigurationHandler {
 	private int loadingTimer = 10;
 	private int endTimer = 10;
 	private int blowupTimer = 15;
+	private int rewardAmount = 10;
 	
 	private boolean xpTimer;
 	private boolean spawnBack;
@@ -26,6 +30,10 @@ public class ConfigurationHandler {
 	private boolean muteChatOnLoad;
 	private boolean shootInAirOnRemove;
 	private boolean announceOnDeath;
+	private boolean economyReward;
+	
+	/** Lists **/
+	private List<String> commandsOnWin = new ArrayList<String>();
 	
 	public ConfigurationHandler ( HotPotato plugin ){
 		this.plugin = plugin;
@@ -62,6 +70,12 @@ public class ConfigurationHandler {
 			this.setShootInAirOnRemove(plugin.getConfig().getBoolean("shootInAirOnRemove"));
 		if(plugin.getConfig().contains("announceOnDeath"))
 			this.setAnnounceOnDeath(plugin.getConfig().getBoolean("announceOnDeath"));
+		if(plugin.getConfig().contains("economyReward"))
+			this.setEconomyReward(plugin.getConfig().getBoolean("economyReward"));
+		if(plugin.getConfig().contains("rewardAmount"))
+			this.setRewardAmount(plugin.getConfig().getInt("rewardAmount"));
+		if(plugin.getConfig().contains("commandsOnWin"))
+			this.setCommandsOnWin(plugin.getConfig().getStringList("commandsOnWin"));
 	}
 
 	/************************************************
@@ -188,5 +202,29 @@ public class ConfigurationHandler {
 
 	public void setAnnounceOnDeath(boolean announceOnDeath) {
 		this.announceOnDeath = announceOnDeath;
+	}
+
+	public boolean isEconomyReward() {
+		return economyReward;
+	}
+
+	public void setEconomyReward(boolean economyReward) {
+		this.economyReward = economyReward;
+	}
+
+	public int getRewardAmount() {
+		return rewardAmount;
+	}
+
+	public void setRewardAmount(int rewardAmount) {
+		this.rewardAmount = rewardAmount;
+	}
+	
+	public List<String> getCommandsOnWin() {
+		return commandsOnWin;
+	}
+
+	public void setCommandsOnWin(List<String> commandsOnWin) {
+		this.commandsOnWin = commandsOnWin;
 	}
 }
