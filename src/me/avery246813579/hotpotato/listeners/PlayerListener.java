@@ -1,5 +1,8 @@
 package me.avery246813579.hotpotato.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.avery246813579.hotpotato.HotPotato;
 
 import org.bukkit.entity.Player;
@@ -9,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -82,5 +86,33 @@ public class PlayerListener implements Listener {
 	        }
 	      }
 	    }
+	  }
+	  
+	  @EventHandler(priority=EventPriority.LOWEST)
+	  public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
+		  if (event.isCancelled()) {
+			  return;
+		  }
+	    
+		  Player player = event.getPlayer();
+		  String cmd = event.getMessage().toLowerCase();
+
+	      if ((!cmd.contains("/hotpotato")) && (!cmd.contains("/hp")) && (this.plugin.getInArena().contains(player))) {
+	    	  boolean allowed = false;
+	    	  List<String> list = new ArrayList<String>();
+	    	  list = this.plugin.getConfig().getStringList("whitelistedCommands");
+	        
+	    	  for (String s : list) {
+	    		  if (cmd.startsWith(s)) {
+	    			  allowed = true;
+	    		  }
+	    	  }
+	        
+	    	  if (!allowed) {
+	    		  this.plugin.sendMessage(player, "You can not use commands in hot potato.");
+	    		  event.setCancelled(true);
+	    		  return;
+	    	  }
+	      }
 	  }
 }

@@ -57,3 +57,26 @@ shootInAirOnRemove: true
 
 # If true, the broadcaster will announce a players death.
 announceOnDeath: true
+
+# When a player wins a game, the console will run these command.
+commandsOnWin:
+- broadcast {PLAYER} has won a match of Hot Potato in arena {ARENA}.
+- give {player} diamond 1
+
+# Commands that, if run in game. Players will be able to run.
+whitelistedCommands:
+- /Mute
+- /Ban
+- /Tempban
+- /Permban
+- /Time
+
+#########################
+#      Economy Info     #
+#########################
+
+# If true, players get money for winning. * Needs Vault *
+economyReward: false
+
+# Amount of money player receives when they win. * Needs Vault and economyReward set to true *
+rewardAmount: 10
