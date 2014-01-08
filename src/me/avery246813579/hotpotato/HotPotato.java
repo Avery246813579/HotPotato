@@ -15,11 +15,13 @@ import me.avery246813579.hotpotato.handlers.SignHandler;
 import me.avery246813579.hotpotato.listeners.BlockListener;
 import me.avery246813579.hotpotato.listeners.PlayerListener;
 import me.avery246813579.hotpotato.listeners.SignListener;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HotPotato extends JavaPlugin{
@@ -40,6 +42,9 @@ public class HotPotato extends JavaPlugin{
 	private List<Player> muted = new ArrayList<Player>();
 	private List<Player> frozed = new ArrayList<Player>();
 	private List<GameManager> games = new ArrayList<GameManager>();
+	
+	/** Vault **/
+	public static Economy economy = null;
 	
 	@Override
 	public void onEnable() {
@@ -104,6 +109,16 @@ public class HotPotato extends JavaPlugin{
 		}
 	    return null;
 	}
+	
+	private boolean setupEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+        }
+
+        return (economy != null);
+    }
 	
 	/************************************************
 	 * 
