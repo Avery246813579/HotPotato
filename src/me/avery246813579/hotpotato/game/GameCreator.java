@@ -49,9 +49,17 @@ public class GameCreator {
 		
 		enabled.add(arenaName);
 		
+		
 		plugin.getConfig().set("enabled", enabled);
 		plugin.saveConfig();
 		
+        Game game = new Game(plugin, arenaName);
+        game.loadGame();
+        GameManager gm = new GameManager(plugin, game);
+        gm.init();
+		
+        plugin.getGames().add(gm);
+        
 		plugin.sendMessage(player, "You have enabled " + arenaName + "!");
 	}
 	
@@ -69,6 +77,8 @@ public class GameCreator {
 				return;
 			}
 		}
+		
+		plugin.getGames().remove(plugin.getGameManager(arenaName));
 		
 		plugin.saveConfig();
 		

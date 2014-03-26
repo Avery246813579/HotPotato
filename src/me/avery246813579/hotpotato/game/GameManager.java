@@ -303,6 +303,8 @@ public class GameManager {
 	public void removePlayer(Player player){
 		findGamePlayer(player).removePlayer();
 		
+		this.clearPotionEffects(player);
+		
 		if(players.contains(player))
 			players.remove(player);
 		if(alive.contains(player))
@@ -353,6 +355,8 @@ public class GameManager {
 		for(Player player : players){
 			removePlayer(player);
 		}
+		
+		removePlayer(winner);
 		
 		resetGame();
 	}

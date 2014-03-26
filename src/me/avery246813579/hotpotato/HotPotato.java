@@ -110,6 +110,7 @@ public class HotPotato extends JavaPlugin{
 	    return null;
 	}
 	
+	@SuppressWarnings("unused")
 	private boolean setupEconomy()
     {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);

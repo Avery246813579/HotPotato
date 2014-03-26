@@ -79,10 +79,12 @@ public class PlayerListener implements Listener {
 	      if ((e.getEntity() instanceof Player)) {
 	        Player attacked = (Player)e.getEntity();
 	        
-	        if(plugin.getPlayersGame(attacked) == plugin.getPlayersGame(attacker)){
-	        	if(plugin.getPlayersGame(attacker).getHasPotato() == attacker){
-	        		plugin.getPlayersGame(attacker).givePotato(attacker, attacked);
-	        	}
+	        if(plugin.getInArena().contains(attacker)){
+		        if(plugin.getPlayersGame(attacked) == plugin.getPlayersGame(attacker)){
+		        	if(plugin.getPlayersGame(attacker).getHasPotato() == attacker){
+		        		plugin.getPlayersGame(attacker).givePotato(attacker, attacked);
+		        	}
+		        }
 	        }
 	      }
 	    }

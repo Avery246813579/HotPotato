@@ -1,6 +1,10 @@
 package me.avery246813579.hotpotato.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.avery246813579.hotpotato.HotPotato;
+import me.avery246813579.hotpotato.game.Game;
 import me.avery246813579.hotpotato.game.GameManager;
 
 import org.bukkit.ChatColor;
@@ -28,15 +32,52 @@ public class CmdHotPotato implements CommandExecutor{
 		
 		if(CommandLabel.equalsIgnoreCase("hotpotato") || CommandLabel.equalsIgnoreCase("hp")){
 			if(args.length == 0){
-				//TODO Make help menu.
-				for(GameManager gm : plugin.getGames()){
-					player.sendMessage(gm.getGame().getArenaName());
+				player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+				player.sendMessage("");
+				plugin.sendMessage(player, ChatColor.BLUE + "/HotPotato Help User " + ChatColor.RED + "- Shows the User help menu.");
+				plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Help Admin " + ChatColor.RED + "- Shows the Admin help menu.");
+				plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Help Setup " + ChatColor.RED + "- Shows commands on how to set up a arena.");
+				plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Help Extra " + ChatColor.RED + "- Shows the extra commands.");
+				player.sendMessage("");
+				player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+				return true;
+			}
+			
+			else if(args[0].equalsIgnoreCase("version")){
+				if(args.length >= 1){
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					player.sendMessage("");
+					plugin.sendMessage(player, "Current Hot Potato Version: " + ChatColor.BLUE + plugin.getDescription().getVersion());
+					player.sendMessage("");
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+
 				}
-				return false;
+			}
+			
+			else if(args[0].equalsIgnoreCase("author")){
+				if(args.length >= 1){
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					player.sendMessage("");
+					plugin.sendMessage(player, "Current Hot Potato Author: " + ChatColor.BLUE + plugin.getDescription().getAuthors());
+					player.sendMessage("");
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+
+				}
+			}
+			
+			else if(args[0].equalsIgnoreCase("website")){
+				if(args.length >= 1){
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					player.sendMessage("");
+					plugin.sendMessage(player, "Current Hot Potato Version: " + ChatColor.BLUE + plugin.getDescription().getWebsite());
+					player.sendMessage("");
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+
+				}
 			}
 				
 			/** If Command is Create **/
-			if(args[0].equalsIgnoreCase("create")){
+			else if(args[0].equalsIgnoreCase("create")){
 				
 				if(args.length == 1 || args.length >= 3){
 					sendArgs(player);
@@ -50,6 +91,69 @@ public class CmdHotPotato implements CommandExecutor{
 					
 				plugin.getGc().createArena(player, args[1]);
 			}
+			
+			else if (args[0].equalsIgnoreCase("help")) {
+				if(args.length == 1){
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					player.sendMessage("");
+					plugin.sendMessage(player, ChatColor.BLUE + "/HotPotato Help User " + ChatColor.RED + "- Shows the User help menu.");
+					plugin.sendMessage(player, ChatColor.BLUE + "/HotPotato Help Admin " + ChatColor.RED + "- Shows the Admin help menu.");
+					plugin.sendMessage(player, ChatColor.BLUE + "/HotPotato Help Setup " + ChatColor.RED + "- Shows commands on how to set up a arena.");
+					plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Help Extra " + ChatColor.RED + "- Shows the extra commands.");
+					player.sendMessage("");
+					player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					return true;
+				}
+				
+				if(args.length >= 3){
+					sendArgs(player);
+					return true;
+				}
+
+				if(args.length == 2){
+					if(args[1].equalsIgnoreCase("User")){
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+						player.sendMessage("");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Join (Arena) " + ChatColor.RED + "- Joins a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Leave " + ChatColor.RED + "- Leaves a arena.");
+						player.sendMessage("");
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					}else if(args[1].equalsIgnoreCase("Admin")){
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+						player.sendMessage("");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Start (Arena) " + ChatColor.RED + "- Starts a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Enable (Arena) " + ChatColor.RED + "- Enables a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Disable (Arena) " + ChatColor.RED + "- Disables a arena.");
+						player.sendMessage("");
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					}else if(args[1].equalsIgnoreCase("Setup")){
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+						player.sendMessage("");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Create (Arena) " + ChatColor.RED + "- Createa a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Update (Lobby|Spawn|Spec|End|World) (Arena) " + ChatColor.RED + "- Updates a location for a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Enable (Arena) " + ChatColor.RED + "- Enables a arena.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Disable (Arena) " + ChatColor.RED + "- Disables a arena.");
+						player.sendMessage("");
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					}else if(args[1].equalsIgnoreCase("Extra")){
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+						player.sendMessage("");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Version " + ChatColor.RED + "- Shows the version of the plugin.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Author " + ChatColor.RED + "- Shows the author of the plugin.");
+						plugin.sendMessage(player,ChatColor.BLUE + "/HotPotato Website " + ChatColor.RED + "- Shows the authors website.");
+						player.sendMessage("");
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					}else{
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+						player.sendMessage("");
+						plugin.sendMessage(player, ChatColor.RED + "Help menu not found. Do /HotPotato Help!");
+						player.sendMessage("");
+						player.sendMessage(ChatColor.GRAY + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+					}
+				}
+
+	            return true;
+	        }
 			
 			else if (args[0].equalsIgnoreCase("start")) {
 				if(args.length == 1 || args.length >= 3){
@@ -164,7 +268,7 @@ public class CmdHotPotato implements CommandExecutor{
 					sendPerm(player);
 					return true;
 				}
-					
+				
 				plugin.getGc().enableArena(player, args[1]);
 			}
 			
@@ -182,6 +286,10 @@ public class CmdHotPotato implements CommandExecutor{
 				}
 					
 				plugin.getGc().disableArena(player, args[1]);
+			}
+			
+			else{
+				plugin.sendMessage(player, ChatColor.RED + "Command not found!");
 			}
 		}
 		

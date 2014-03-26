@@ -41,13 +41,37 @@ public class SignListener implements Listener {
 		if(player.hasPermission("hotpotato.signs")){
 			if (event.getLine(0).equalsIgnoreCase("[HotPotato]")) {
 				if(!event.getLine(1).isEmpty()){
-	                Sign sign = (Sign) event.getBlock().getState();
+				    Sign sign = (Sign) event.getBlock().getState();
 	                sign.setLine(0, event.getLine(0));
 	                sign.setLine(1, event.getLine(1));
 	                sign.setLine(2, event.getLine(2));
 	                sign.setLine(3, event.getLine(3));
 	                sign.update();
 	                SignHandler.registerSign(sign);
+	                
+	            	GameManager gm = null;
+	                String arena = event.getLine(1);
+	                
+	                if(plugin.getGameManager(arena) != null){
+	                	event.setLine(1, arena);
+	                	gm = plugin.getGameManager(arena);
+	                }else{
+	                	event.setLine(1, "Arena not found.");
+	                	return;
+	                }
+	                
+	                if(gm.isInGame()){
+	                	event.setLine(3, ChatColor.RED + "In Game");
+	                	event.setLine(0, ChatColor.RED + "[Non-Joinable]");
+	                }else if(gm.getPlayers().size() >= plugin.getConfigHandler().getMaxPlayers()){
+	                	event.setLine(3, ChatColor.RED + "Full");
+	                	event.setLine(0, ChatColor.RED + "[Non-Joinable]");
+	        		}else{
+	        			event.setLine(3, ChatColor.GREEN + "In Lobby");
+	        			event.setLine(0, ChatColor.GREEN + "[Join]");
+	                }
+	                
+	                event.setLine(2, "" + ChatColor.GRAY + gm.getPlayers().size() + "/" + plugin.getConfigHandler().getMaxPlayers());
 				}
 			}else if(event.getLine(0).equalsIgnoreCase("[HPLEAVE]")){	
 				event.setLine(0, ChatColor.RED + "Hot Potato");
@@ -56,6 +80,8 @@ public class SignListener implements Listener {
 				event.setLine(0, ChatColor.RED + "Hot Potato");
 				event.setLine(1, ChatColor.BLUE + "Start");
 			}
+			
+            SignHandler.updateSigns();
 		}
 	}
 	
@@ -105,6 +131,21 @@ public class SignListener implements Listener {
             					plugin.sendMessage(player, ChatColor.RED + "You are not in a arena.");
             			 }
             		 }
+            	 }
+             }
+         }
+	 }
+	 
+	 @EventHandler
+     public void onPlayerIntedract(PlayerInteractEvent event) {
+		 Player player = event.getPlayer();
+         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        	 Block b = event.getClickedBlock();
+             if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
+            	 Sign sign = (Sign) b.getState();
+                 
+            	 if(sign.getLine(0).equalsIgnoreCase("[Shop]")){
+            		 
             	 }
              }
          }
