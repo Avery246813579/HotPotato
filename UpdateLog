@@ -1,0 +1,17 @@
+=== Hot Potato V1.0.4 ===
+
+//**====<<color 00f>> Fixed bugs: <</color>>====**//
+* Fixed arena signs not loading right away.
+* Fixed enabling arenas not working right away.
+* Fixed disabing not disabling right away.
+* Fixed chat bug
+
+//**====<<color 00f>> Added Features: <</color>>====**//
+* Made tweeks that will show in next major update.
+
+//**====<<color 00f>> V1.1 Features: <</color>>====**//
+* Perks
+* Multi maps
+* Message editor
+* Credits being added
+* Dedicated server mode
