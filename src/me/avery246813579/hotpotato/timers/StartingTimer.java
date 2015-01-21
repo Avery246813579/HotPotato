@@ -1,55 +1,53 @@
 package me.avery246813579.hotpotato.timers;
 
-import me.avery246813579.hotpotato.HotPotato;
-import me.avery246813579.hotpotato.game.GameManager;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-public class StartingTimer implements Listener, Runnable {
+import me.avery246813579.hotpotato.files.FileHandler;
+import me.avery246813579.hotpotato.game.GameManager;
+import me.avery246813579.hotpotato.game.GamePlayer;
+import me.avery246813579.hotpotato.game.GameTimer;
+import me.avery246813579.hotpotato.util.MessageUtil;
 
-	HotPotato plugin;
-	GameManager gm;
-	
-	public int t;
-	int timer;
-	
-	public StartingTimer ( HotPotato plugin, GameManager gm ){
-		this.plugin = plugin;
-		this.gm = gm;
-	}
-	
-	public void init(){
-		timer = plugin.getConfigHandler().getLoadingTimer();
-		
-		t = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 20L, 20L);
+public class StartingTimer extends GameTimer{
+	public StartingTimer(GameManager game) {
+		super(game, FileHandler.ConfigFile.getFile().getInt("lobbyTime"));
 	}
 
 	@Override
-	public void run() {
-		if(timer != 0){
-			timer--;
+	protected void onScheduleEnd(int timeState) {
+		if(FileHandler.ConfigFile.getFile().getInt("minPlayers") > getGameManager().getGamePlayers().size() && !getGameManager().isForceStart()){
+			for(GamePlayer gp : getGameManager().getGamePlayers()){
+				MessageUtil.sendTextMessage(gp.getPlayer(), "notEnoughPlayers");
+			}
 			
-			for(Player player : Bukkit.getOnlinePlayers()){
-				if(plugin.getConfigHandler().isXpTimer())
-					player.setLevel(timer);
+			Bukkit.getScheduler().cancelTask(timeState);
+			new LobbyTimer(getGameManager());
+			return;
+		}
+		
+		Bukkit.getScheduler().cancelTask(timeState);
+		getGameManager().prepareGame();
+	}
+
+	@Override
+	protected void onRunnableTick(int timeLeft) {
+		if((int)(FileHandler.ConfigFile.getFile().getInt("maxPlayers") * .75) <= Bukkit.getOnlinePlayers().length && timeLeft > (int)(timeLeft * 25)){
+			timeLeft = (int)(timeLeft * .25);
+		}
+		
+		for(GamePlayer gp : getGameManager().getGamePlayers()){
+			if(timeLeft % 15 == 0 && timeLeft != 0 || timeLeft == 10 || timeLeft <= 5){
+				MessageUtil.sendTextMessage(gp.getPlayer(), "lobbyCountdown", Integer.toString(timeLeft));
+			}
+			
+			if(timeLeft <= 5){
+				gp.getPlayer().playSound(gp.getPlayer().getLocation(), Sound.NOTE_PLING, 2.0F, 1.0F);
 			}
 		}
 		
-		if(timer <= 5){
-			for(Player player : Bukkit.getOnlinePlayers()){
-				plugin.sendMessage(player, "Teleporting players to map in: " + ChatColor.GOLD + timer + " seconds.");
-				player.playSound(player.getLocation(), Sound.CLICK, 10, 10);
-			}
-		}
-		
-		if(timer == 0){
-			plugin.getServer().getScheduler().cancelTask(t);
-			gm.loadGame();
+		for (GamePlayer gp : getGameManager().getGamePlayers()) {
+			gp.getPlayer().setLevel(timeLeft);
 		}
 	}
 }
-

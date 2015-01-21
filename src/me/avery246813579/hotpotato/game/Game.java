@@ -1,151 +1,109 @@
 package me.avery246813579.hotpotato.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import me.avery246813579.hotpotato.files.FileHandler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-
-import me.avery246813579.hotpotato.HotPotato;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class Game {
+	private GameManager gm;
+	private String mapName, mapCreator;
+	private List<Location> spawns = new ArrayList<Location>();
+	private Location mapCenter, specSpawn, lobbyLocation;
+	private int currentSpawn;
 
-	HotPotato plugin;
-	
-	/** Arena info **/
-	private String arenaName;
-	
-	/** Arena Locations **/
-	private Location spawn;
-	private Location lobby;
-	private Location spec;
-	private Location end;
-	
-	/** Arena Worlds **/
-	private World lobbyWorld;
-	private World arenaWorld;
+	public Game(GameManager gm, String mapLocation) {
+		this.gm = gm;
 
-	public Game ( HotPotato plugin, String arena ){
-		this.plugin = plugin;
-		setArenaName(arena.toLowerCase());
-	}
-	
-	public void loadGame(){
-		World lobbyWorld = plugin.getServer().getWorld(plugin.getFh().getArena().getConfigurationSection(arenaName).getString("lobby.world"));
-		
-		if(lobbyWorld != null){
-			this.lobbyWorld = lobbyWorld;
-			
-			String y = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("lobby.yaw");
-			String p = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("lobby.pitch");
+		ConfigurationSection configSection = FileHandler.DataFile.getFile().getConfigurationSection("arenas." + mapLocation);
+		mapName = configSection.getString("mapName");
+		mapCreator = configSection.getString("mapCreator");
 
-			float yaw = (float)Float.parseFloat(y);
-			float pitch = (float)Float.parseFloat(p);
-			
-			try {
-				lobby = new Location(lobbyWorld, plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("lobby.x"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("lobby.y"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("lobby.z"), yaw, pitch).clone().add(0.5D, 0.5D, 0.5D);
-				plugin.sendConsole("Lobby has been created.");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		for (String locations : configSection.getStringList("mapSpawns")) {
+			spawns.add(parseLocation(locations));
 		}
-		
-		
-		World arenaWorld = Bukkit.getWorld(plugin.getFh().getArena().getConfigurationSection(arenaName).getString("arenaworld"));
-		
-		/** Spawn location **/
-		if(arenaWorld != null){
-			this.arenaWorld = arenaWorld;
 
-			String y = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("spawn.yaw");
-			String p = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("spawn.pitch");
-
-			float yaw = Float.parseFloat(y);
-			float pitch = Float.parseFloat(p);
-			
-			spawn = new Location(arenaWorld, plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spawn.x"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spawn.y"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spawn.z"), yaw, pitch).clone().add(0.5D, 0.5D, 0.5D);
-		}
-		
-		/** Spectate Location **/
-		if(arenaWorld != null){
-			String y = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("spec.yaw");
-			String p = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("spec.pitch");
-
-			float yaw = Float.parseFloat(y);
-			float pitch = Float.parseFloat(p);
-			
-			spec = new Location(arenaWorld, plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spec.x"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spec.y"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("spec.z"), yaw, pitch).clone().add(0.5D, 0.5D, 0.5D);
-		}
-		
-		/** End Location **/
-		if(arenaWorld != null){
-			String y = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("end.yaw");
-			String p = plugin.getFh().getArena().getConfigurationSection(arenaName).getString("end.pitch");
-
-			float yaw = Float.parseFloat(y);
-			float pitch = Float.parseFloat(p);
-			
-			end = new Location(arenaWorld, plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("end.x"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("end.y"), plugin.getFh().getArena().getConfigurationSection(arenaName).getInt("end.z"), yaw, pitch).clone().add(0.5D, 0.5D, 0.5D);
-		}
+		mapCenter = parseLocation(configSection.getString("mapCenter"));
+		specSpawn = parseLocation(configSection.getString("specSpawn"));
+		lobbyLocation = parseLocation(configSection.getString("lobbyLocation"));
 	}
 
-	/********************************************
-	 * 
-	 * 				Getter & Setters
-	 * 
-	 *******************************************/
-	
-	public String getArenaName() {
-		return arenaName;
-	}
+	public Location parseLocation(String location) {
+		String[] splits = location.split(" ");
 
-	public void setArenaName(String arenaName) {
-		this.arenaName = arenaName;
+		World world = Bukkit.getWorld(splits[0]);
+		if (world == null) {
+			gm.setGameState(GameState.Limbow);
+		}
+
+		if (splits.length <= 4) {
+			return new Location(world, Integer.parseInt(splits[1]), Integer.parseInt(splits[2]), Integer.parseInt(splits[3]));
+		} else {
+			return new Location(world, Integer.parseInt(splits[1]), Integer.parseInt(splits[2]), Integer.parseInt(splits[3]), Float.parseFloat(splits[4]), Float.parseFloat(splits[5]));
+		}
 	}
 
 	public Location getSpawn() {
+		if (currentSpawn == (spawns.size() - 1)) {
+			currentSpawn = 0;
+		}
+
+		Location spawn = spawns.get(currentSpawn);
+		currentSpawn++;
+
 		return spawn;
 	}
 
-	public void setSpawn(Location spawn) {
-		this.spawn = spawn;
+	public String getMapName() {
+		return mapName;
 	}
 
-	public Location getLobby() {
-		return lobby;
+	public void setMapName(String mapName) {
+		this.mapName = mapName;
 	}
 
-	public void setLobby(Location lobby) {
-		this.lobby = lobby;
+	public String getMapCreator() {
+		return mapCreator;
 	}
 
-	public Location getSpec() {
-		return spec;
+	public void setMapCreator(String mapCreator) {
+		this.mapCreator = mapCreator;
 	}
 
-	public void setSpec(Location spec) {
-		this.spec = spec;
+	public List<Location> getSpawns() {
+		return spawns;
 	}
 
-	public Location getEnd() {
-		return end;
+	public void setSpawns(List<Location> spawns) {
+		this.spawns = spawns;
 	}
 
-	public void setEnd(Location end) {
-		this.end = end;
+	public Location getMapCenter() {
+		return mapCenter;
 	}
 
-	public World getLobbyWorld() {
-		return lobbyWorld;
+	public void setMapCenter(Location mapCenter) {
+		this.mapCenter = mapCenter;
 	}
 
-	public void setLobbyWorld(World lobbyWorld) {
-		this.lobbyWorld = lobbyWorld;
+	public Location getSpecSpawn() {
+		return specSpawn;
 	}
 
-	public World getArenaWorld() {
-		return arenaWorld;
+	public void setSpecSpawn(Location specSpawn) {
+		this.specSpawn = specSpawn;
 	}
 
-	public void setArenaWorld(World arenaWorld) {
-		this.arenaWorld = arenaWorld;
+	public Location getLobbyLocation() {
+		return lobbyLocation;
+	}
+
+	public void setLobbyLocation(Location lobbyLocation) {
+		this.lobbyLocation = lobbyLocation;
 	}
 }

@@ -1,41 +1,30 @@
 name: HotPotato
+version: 1.2.1
 main: me.avery246813579.hotpotato.HotPotato
-version: 1.0.4
-softdepend: [Vault]
-website: www.frostbytedev.com
-description: Hot Potato in real Minecraft.
-commands:
-  hotpotato:
-    description: Hot Potato Command.
+commands: 
   hp:
-    description: Hot Potato Command.
+    description: Updates a spawn.
+  hotpotato:
+    description: Creates a arena.
 permissions:
-    hotpotato.user:
-        description: Grants the player all user commands.
-        default: true
-        children:
-            hotpotato.join: true
-    hotpotato.admin:
-        description: Grants the player all admin commands.
-        default: op
-        children:
-            hotpotato.user: true
-            hotpotato.create: true
-            hotpotato.update: true
-            hotpotato.enable: true
-            hotpotato.disable: true
-            hotpotato.signs: true
-    hotpotato.join:
-        description: Allows the user to join a arena.
-    hotpotato.create:
-        description: Allows the user to run the set command.
-    hotpotato.update:
-        description: Allows the user to run the set command.
-    hotpotato.enable:
-        description: Allows the user to run the set command.
-    hotpotato.disable:
-        description: Allows the user to run the set command.
-    hotpotato.start:
-        description: Allows the user to run the set command.
-    hotpotato.signs:
-        description: Allows the user to create hot potato signs.
+  hotpotato.signs:
+    description: Allows players to create signs.
+    default: op
+  hotpotato.command.create:
+    description: Allows players to create a arena.
+    default: op
+  hotpotato.commands.join:
+    description: Allows players to join a arena.
+    default: true
+  hotpotato.commands.leave:
+    description: Allows players to leave a arena.
+    default: true
+  hotpotato.commands.start:
+    description: Allows players to start a arena.
+    default: op
+  hotpotato.commands.stop:
+    description: Allows players to stop a arena.
+    default: op
+  hotpotato.commands.update:
+    description: Allows players to update a arena.
+    default: op   

@@ -1,77 +1,136 @@
 package me.avery246813579.hotpotato.game;
 
+import me.avery246813579.hotpotato.files.FileHandler;
+import me.avery246813579.hotpotato.util.MessageUtil;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.Vector;
 
 public class GamePlayer {
+	/** Classes **/
+	GameManager gameManager;
+	
+	/** Variables **/
+	private Player player, killer;
+	private int kills;
+	private boolean alive, playedGame = false;
+	
+	/** Players Old Information **/
+	private ItemStack[] playerInventory, armorInventory;
+	private boolean isFlying, canFly;
+	private Location lastLocation;
+	private GameMode gameMode;
+	private int hunger, levels;
+	private double health;
+	private float exp;
 
-	GameManager gm;
-	
-	private Player player;
-	private String playerName;
-	private Location spawnBack;
-	private double health; 
-	private int hunger;
-	private ItemStack[] inventory;
-	private GameMode gamemode;
-	private float xpAmount;
-	
-	
-	public GamePlayer ( GameManager gm, Player player ){
-		this.gm = gm;
+	public GamePlayer(GameManager gameManager, Player player){
+		this.gameManager = gameManager;
 		this.player = player;
-		this.playerName = player.getName();
+		
+		savePlayer();
+		resetPlayerManually();
+		giveRespectedItems();
+	}
+
+	public void makeSpecator(){
+		alive = false;
+		gameManager.checkWinner();
+		resetPlayerManually();
+		giveRespectedItems();
+		player.teleport(gameManager.getGame().getSpecSpawn());
+		player.setHealth(20);
+		player.setVelocity(new Vector(0, 0, 0));
+		
+		if(FileHandler.ConfigFile.getFile().getBoolean("canFlyWhenDead")){
+			player.setAllowFlight(true);
+			player.setFlying(true);
+		}else{
+			player.setAllowFlight(false);
+			player.setFlying(false);
+		}
+		
+		for(GamePlayer gp : gameManager.getGamePlayers()){
+			if(gameManager.getGameState() == GameState.Live){
+				Player other = gp.getPlayer();
+				
+				if(gp.isAlive()){
+					player.showPlayer(other);
+					other.hidePlayer(player);
+				}else{
+					player.hidePlayer(other);
+					other.hidePlayer(player);
+				}
+			}else{
+				player.showPlayer(gp.getPlayer());;
+				gp.getPlayer().showPlayer(player);
+			}
+		}
+		
+		MessageUtil.sendTextMessage(player, "makeSpec");
 	}
 	
-	public void addPlayer(){
-		spawnBack = player.getLocation().clone().add(0.5D, 0.5D, 0.5D);
-		health = player.getHealth();
+	public void savePlayer(){
+		playerInventory = player.getInventory().getContents();
+		armorInventory = player.getInventory().getArmorContents();
+		isFlying = player.isFlying();
+		canFly = player.getAllowFlight();
+		lastLocation = player.getLocation();
+		gameMode = player.getGameMode();
 		hunger = player.getFoodLevel();
-		setInventory(player.getInventory().getContents());
-		gamemode = player.getGameMode();
-		xpAmount = player.getExp();
+		levels = player.getLevel();
+		health = player.getHealth();
+		exp = player.getExp();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void loadPlayer(){
+		player.getInventory().setContents(playerInventory);
+		player.getInventory().setArmorContents(armorInventory);
+		player.setFlying(isFlying);
+		player.setAllowFlight(canFly);
+		player.teleport(lastLocation);
+		player.setGameMode(gameMode);
+		player.setFoodLevel(hunger);
+		player.setLevel(levels);
+		player.setHealth(health);
+		player.setExp(exp);
+		player.updateInventory();
+	}
+	
+	public void giveRespectedItems(){
 		
-		/** Clear all of this **/
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void resetPlayerManually(){
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
+		player.setFireTicks(0);
+		player.setGameMode(GameMode.SURVIVAL);
+		player.setFlying(false);
+		player.setAllowFlight(false);
+		player.setMaxHealth(20);
+		player.setVelocity(new Vector(0, 0, 0));
+		player.setExp(0);
+		player.setLevel(0);
 		player.getInventory().clear();
 		player.getInventory().setHelmet(null);
 		player.getInventory().setChestplate(null);
 		player.getInventory().setLeggings(null);
 		player.getInventory().setBoots(null);
-		player.setGameMode(GameMode.SURVIVAL);
-		player.setExp(0);
-		player.setLevel(0);
-	}
-	
-	public void removePlayer(){
-		player.teleport(spawnBack);
-		if(gm.getPlugin().getConfigHandler().isSaveHealth()){
-			player.setHealth(health);
-			player.setFoodLevel(hunger);
+		
+		for(PotionEffect potionEffect : player.getActivePotionEffects()){
+			player.removePotionEffect(potionEffect.getType());
 		}
-		player.getInventory().clear();
-		player.getInventory().setContents(inventory);
-		player.setGameMode(gamemode);
-		player.setExp(xpAmount);
+		
+		player.updateInventory();
 	}
 	
-	/************************************************
-	 * 
-	 * 				Getters & Setters
-	 * 
-	 ************************************************/
-
-	public Location getSpawnBack() {
-		return spawnBack;
-	}
-
-	public void setSpawnBack(Location spawnBack) {
-		this.spawnBack = spawnBack;
-	}
-
 	public Player getPlayer() {
 		return player;
 	}
@@ -80,54 +139,35 @@ public class GamePlayer {
 		this.player = player;
 	}
 
-	public String getPlayerName() {
-		return playerName;
+	public Player getKiller() {
+		return killer;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setKiller(Player killer) {
+		this.killer = killer;
 	}
 
-	public double getHealth() {
-		return health;
+	public int getKills() {
+		return kills;
 	}
 
-	public void setHealth(float health) {
-		this.health = health;
+	public void setKills(int kills) {
+		this.kills = kills;
 	}
 
-	public int getHunger() {
-		return hunger;
+	public boolean isAlive() {
+		return alive;
 	}
 
-	public void setHunger(int hunger) {
-		this.hunger = hunger;
+	public void setAlive(boolean alive) {
+		this.alive = alive;
 	}
 
-	public ItemStack[] getInventory() {
-		return inventory;
+	public boolean isPlayedGame() {
+		return playedGame;
 	}
 
-	public void setInventory(ItemStack[] inventory) {
-		this.inventory = inventory;
+	public void setPlayedGame(boolean playedGame) {
+		this.playedGame = playedGame;
 	}
-
-	public GameMode getGamemode() {
-		return gamemode;
-	}
-
-	public void setGamemode(GameMode gamemode) {
-		this.gamemode = gamemode;
-	}
-
-	public float getXpAmount() {
-		return xpAmount;
-	}
-
-	public void setXpAmount(int xpAmount) {
-		this.xpAmount = xpAmount;
-	}
-	
-	
-	
 }

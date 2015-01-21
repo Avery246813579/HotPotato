@@ -2,206 +2,104 @@ package me.avery246813579.hotpotato;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import me.avery246813579.hotpotato.game.Game;
-import me.avery246813579.hotpotato.game.GameCreator;
+import me.avery246813579.hotpotato.commands.GameCommand;
+import me.avery246813579.hotpotato.files.FileHandler;
 import me.avery246813579.hotpotato.game.GameManager;
-import me.avery246813579.hotpotato.handlers.CommandHandler;
-import me.avery246813579.hotpotato.handlers.ConfigurationHandler;
-import me.avery246813579.hotpotato.handlers.FileHandler;
-import me.avery246813579.hotpotato.handlers.FireworkHandler;
-import me.avery246813579.hotpotato.handlers.SignHandler;
-import me.avery246813579.hotpotato.listeners.BlockListener;
-import me.avery246813579.hotpotato.listeners.PlayerListener;
-import me.avery246813579.hotpotato.listeners.SignListener;
-import net.milkbowl.vault.economy.Economy;
+import me.avery246813579.hotpotato.game.GamePlayer;
+import me.avery246813579.hotpotato.listener.PlayerListener;
+import me.avery246813579.hotpotato.listener.SignListener;
+import me.avery246813579.hotpotato.util.FireworkUtil;
+import me.avery246813579.hotpotato.util.SignUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class HotPotato extends JavaPlugin{
+public class HotPotato extends JavaPlugin {
+	/** Variables **/
+	private static List<Player> inGame = new ArrayList<Player>();
+	private static List<GameManager> games = new ArrayList<GameManager>();
+	private static HotPotato plugin;
 
-	Logger logger = Logger.getLogger("Minecraft");
-	
-	/** Classes **/
-	private ConfigurationHandler configHandler = new ConfigurationHandler(this);
-	private FireworkHandler firework = new FireworkHandler();
-	private CommandHandler cm = new CommandHandler(this);
-	private FileHandler fh = new FileHandler(this);
-	private GameCreator gc = new GameCreator(this);
-	@SuppressWarnings("unused")
-	private SignHandler sh = new SignHandler(this);
-	
-	/** Lists **/
-	private List<Player> inArena = new ArrayList<Player>();
-	private List<Player> muted = new ArrayList<Player>();
-	private List<Player> frozed = new ArrayList<Player>();
-	private List<GameManager> games = new ArrayList<GameManager>();
-	
-	/** Vault **/
-	public static Economy economy = null;
-	
-	@Override
 	public void onEnable() {
-		/** Save the config **/
-		this.getConfig().options().copyDefaults(true);
-		this.getFh().getArena().options().copyDefaults(true);
-		this.saveConfig();
-		this.getFh().saveArena();
+		/** Sets the instance of the class **/
+		HotPotato.plugin = this;
+
+		/** Creating instances of Game Files **/
+		new FileHandler();
+		new FireworkUtil();
+		new SignUtil();
 		
-		/** Inits **/
-		configHandler.init();
-		cm.init();
-		this.enableArenas();
-		
-		/** Plugin Manager **/
-		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new BlockListener(this), this);
-		pm.registerEvents(new PlayerListener(this), this);
-		pm.registerEvents(new SignListener(this), this);
-		
-		/** Updates signs **/
-        SignHandler.loadSigns();
-        SignHandler.updateSigns();
-	}
-	
-	@Override
-	public void onDisable() {
-		SignHandler.saveSigns();
-	}
-	
-	public void enableArenas(){
-        List<String> arenas = new ArrayList<String>();
-        arenas = this.getConfig().getStringList("enabled");
-        for (String games : arenas) {
-            Game game = new Game(this, games);
-            game.loadGame();
-            GameManager gm = new GameManager(this, game);
-            gm.init();
-            
-            this.games.add(gm);
-        }
-	}
-	
-	public GameManager getGameManager(String arena) {
-        for (GameManager gm : this.games) {
-
-            if (gm.getGame().getArenaName().equalsIgnoreCase(arena)) {
-
-                return gm;
-
-            }
-        }
-        return null;
-
-	}
-
-	public GameManager getPlayersGame(Player player) {
-		for (GameManager gm : games) {
-			if (gm.getPlayers().contains(player)) {
-				return gm;
-	        }
+		/** Load The Active Games **/
+		if (FileHandler.ConfigFile.getFile().contains("activeArenas")) {
+			for (String arena : FileHandler.ConfigFile.getFile().getConfigurationSection("activeArenas").getKeys(false)) {
+				games.add(new GameManager(FileHandler.ConfigFile.getFile().getString("activeArenas." + arena + ".name"), arena));
+			}
 		}
-	    return null;
-	}
-	
-	@SuppressWarnings("unused")
-	private boolean setupEconomy()
-    {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
 
-        return (economy != null);
-    }
-	
-	/************************************************
-	 * 
-	 * 					Messages
-	 * 
-	 ************************************************/
-	
-	public void sendMessage(Player player, String message){
-		player.sendMessage(ChatColor.BLUE + "[ " + ChatColor.GRAY + this.getConfigHandler().getPrefix() + ChatColor.BLUE + " ] " + ChatColor.GRAY + message);
-	}
-	
-	public void sendConsole(String message){
-		this.getLogger().info(message);
-	}
-	
-	/************************************************
-	 * 
-	 * 				Getters & Setters
-	 * 
-	 ************************************************/
+		/** Adds a listener **/
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
 
-	public ConfigurationHandler getConfigHandler() {
-		return configHandler;
+		/** Loads Commands **/
+		GameCommand command = new GameCommand();
+		getCommand("hotpotato").setExecutor(command);
+		getCommand("hp").setExecutor(command);
 	}
 
-	public void setConfigHandler(ConfigurationHandler configHandler) {
-		this.configHandler = configHandler;
+	public static GameManager findGame(Player player) {
+		for (GameManager gameManager : games) {
+			for (GamePlayer gp : gameManager.getGamePlayers()) {
+				if (gp.getPlayer() == player) {
+					return gameManager;
+				}
+			}
+		}
+
+		return null;
 	}
 
-	public FileHandler getFh() {
-		return fh;
+	public static GameManager findGame(String name) {
+		for (GameManager gameManager : games) {
+			if (gameManager.getGame().getMapName().equalsIgnoreCase(name)) {
+				return gameManager;
+			}
+		}
+
+		return null;
 	}
 
-	public void setFh(FileHandler fh) {
-		this.fh = fh;
+	public void onDisable() {
+		for(GameManager gameManager : games){
+			for(GamePlayer gamePlayer : gameManager.getGamePlayers()){
+				gamePlayer.resetPlayerManually();
+				gamePlayer.loadPlayer();
+			}
+		}
 	}
 
-	public GameCreator getGc() {
-		return gc;
+	public static HotPotato getPlugin() {
+		return plugin;
 	}
 
-	public void setGc(GameCreator gc) {
-		this.gc = gc;
+	public static void setPlugin(HotPotato plugin) {
+		HotPotato.plugin = plugin;
 	}
 
-	public List<Player> getInArena() {
-		return inArena;
-	}
-
-	public void setInArena(List<Player> inArena) {
-		this.inArena = inArena;
-	}
-
-	public List<Player> getMuted() {
-		return muted;
-	}
-
-	public void setMuted(List<Player> muted) {
-		this.muted = muted;
-	}
-
-	public List<Player> getFrozed() {
-		return frozed;
-	}
-
-	public void setFrozed(List<Player> frozed) {
-		this.frozed = frozed;
-	}
-
-	public FireworkHandler getFirework() {
-		return firework;
-	}
-
-	public void setFirework(FireworkHandler firework) {
-		this.firework = firework;
-	}
-
-	public List<GameManager> getGames() {
+	public static List<GameManager> getGames() {
 		return games;
 	}
 
-	public void setGames(List<GameManager> games) {
-		this.games = games;
+	public static void setGames(List<GameManager> games) {
+		HotPotato.games = games;
+	}
+
+	public static List<Player> getInGame() {
+		return inGame;
+	}
+
+	public static void setInGame(List<Player> inGame) {
+		HotPotato.inGame = inGame;
 	}
 }

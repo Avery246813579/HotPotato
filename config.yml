@@ -1,82 +1,11 @@
-#########################
-#     Plugin Info       #
-#########################
-
-# Name before all plugin messages.
-prefix: HotPotato
-
-#########################
-#       Players         #
-#########################
-
-# Minimum amount of players to start a game.
-minPlayers: 6
-# The maximum amount of players able to join a game.
-maxPlayers: 12
-
-#########################
-#        Timers         #
-#########################
-
-# Lobby Timer.
-lobbyTimer: 120
-
-# Wait Timer.
-waitTimer: 10
-
-# Loading arena timer.
-loadingTimer: 10
-
-# Timer until game ends.
-endTimer: 10
-
-# Time player has the bomb.
-blowupTimer: 15
-
-#########################
-#       Game Info       #
-#########################
-
-# If true, Xp levels will go up.
-xpTimer: true
-
-# If true, players will spawn back to the location they came from.
-spawnBack: true
-
-# If true, the players hunger and health will be saved on join and given back on leave.
-saveHealth: true
-
-# If true, players will be able to fly in spawn.
-flyinLobby: false
-
-# If true, when arena is loading, the chat will be muted.
-muteChatOnLoad: true
-
-# If true, player will be shot in air when they are removed from the game.
-shootInAirOnRemove: true
-
-# If true, the broadcaster will announce a players death.
-announceOnDeath: true
-
-# When a player wins a game, the console will run these command.
+canFlyWhenDead: false
+endTime: 10
+prepareTime: 10
+lobbyTime: 10
+maxGameLength: 6000
+minPlayers: 2
+maxPlayers: 8
+description: 'Try to get rid of the Potato by smacking a player! Last one alive wins!'
+potatoTime: 20
 commandsOnWin:
-- broadcast {PLAYER} has won a match of Hot Potato in arena {ARENA}.
-- give {player} diamond 1
-
-# Commands that, if run in game. Players will be able to run.
-whitelistedCommands:
-- /Mute
-- /Ban
-- /Tempban
-- /Permban
-- /Time
-
-#########################
-#      Economy Info     #
-#########################
-
-# If true, players get money for winning. * Needs Vault *
-economyReward: false
-
-# Amount of money player receives when they win. * Needs Vault and economyReward set to true *
-rewardAmount: 10
+  - 'Example Command'

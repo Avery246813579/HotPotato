@@ -1,50 +1,32 @@
 package me.avery246813579.hotpotato.timers;
 
-import me.avery246813579.hotpotato.HotPotato;
-import me.avery246813579.hotpotato.game.GameManager;
-
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-public class EndTimer implements Listener, Runnable {
+import me.avery246813579.hotpotato.files.FileHandler;
+import me.avery246813579.hotpotato.game.GameManager;
+import me.avery246813579.hotpotato.game.GamePlayer;
+import me.avery246813579.hotpotato.game.GameTimer;
+import me.avery246813579.hotpotato.util.MessageUtil;
 
-	HotPotato plugin;
-	GameManager gm;
-	
-	public int t;
-	int timer;
-	
-	public EndTimer ( HotPotato plugin, GameManager gm ){
-		this.plugin = plugin;
-		this.gm = gm;
-	}
-	
-	public void init(){
-		timer = plugin.getConfigHandler().getWaitTimer();
-		
-		t = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 20L, 20L);
+public class EndTimer extends GameTimer {
+	public EndTimer(GameManager gm) {
+		super(gm, FileHandler.ConfigFile.getFile().getInt("endTime"));
 	}
 
 	@Override
-	public void run() {
-		if(timer != 0){
-			timer--;
-			
-			for(Player player : Bukkit.getOnlinePlayers()){
-				if(plugin.getConfigHandler().isXpTimer())
-					player.setLevel(timer);
+	protected void onScheduleEnd(int timeState) {
+		Bukkit.getScheduler().cancelTask(timeState);
+		getGameManager().endGame();
+	}
+
+	@Override
+	protected void onRunnableTick(int timeLeft) {
+		for (GamePlayer gp : getGameManager().getGamePlayers()) {
+			if (timeLeft % 2 == 0) {
+				MessageUtil.sendTextMessage(gp.getPlayer(), "announceWinner", getGameManager().getWinners().get(0).getPlayer().getName());
 			}
-		}
-		
-		if(timer % 2 == 0){
-			gm.announceWinner();
-		}
-		
-		if(timer == 0){
-			plugin.getServer().getScheduler().cancelTask(t);
-			gm.finishGame();
+			
+			gp.getPlayer().setLevel(timeLeft);
 		}
 	}
 }
-
