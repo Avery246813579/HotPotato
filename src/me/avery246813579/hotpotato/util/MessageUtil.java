@@ -7,6 +7,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MessageUtil {
+	public static String getText(String message, String object, String object2, String object3){
+		if(!FileHandler.TextFile.getFile().contains(message)){
+			FileHandler.TextFile.reloadFile();
+		}
+		
+		String message1 = FileHandler.TextFile.getFile().getString(message);
+		
+		String rawMessage = message1.replace("{OBJECT1}", object);
+		String sentMessage = rawMessage.replace("{OBJECT2}", object2);
+		String sentMessage2 = sentMessage.replace("{OBJECT3}", object3);
+		return sentMessage2;
+	}
+	
 	public static void sendTextMessage(Player player, String message){
 		if(!FileHandler.TextFile.getFile().contains(message)){
 			FileHandler.TextFile.reloadFile();
