@@ -55,9 +55,14 @@ public class SignUtil {
 		for (String location : FileHandler.SignFile.getFile().getConfigurationSection("signs").getKeys(false)) {
 			String game = FileHandler.SignFile.getFile().getString("signs." + location);
 
-			if (parseLocation(location).getBlock().getState().getType() == Material.SIGN || parseLocation(location).getBlock().getState().getType() == Material.WALL_SIGN || parseLocation(location).getBlock().getState().getType() == Material.SIGN_POST) {
-				updateSign(parseLocation(location), game);
-				signs.put(parseLocation(location), game);
+			if (parseLocation(location) != null) {
+				if (parseLocation(location).getBlock().getState().getType() == Material.SIGN || parseLocation(location).getBlock().getState().getType() == Material.WALL_SIGN
+						|| parseLocation(location).getBlock().getState().getType() == Material.SIGN_POST) {
+					updateSign(parseLocation(location), game);
+					signs.put(parseLocation(location), game);
+				}
+			}else{
+				deleteSign(location);
 			}
 		}
 
@@ -87,6 +92,22 @@ public class SignUtil {
 		ConfigurationSection config = FileHandler.SignFile.getFile().getConfigurationSection("signs");
 		if (config.contains(parseString(location))) {
 			FileHandler.SignFile.getFile().getConfigurationSection("signs").getKeys(false).remove(parseString(location));
+			FileHandler.SignFile.saveFile();
+		}
+
+		if (signs.contains(location)) {
+			signs.remove(location);
+		}
+	}
+	
+	public static void deleteSign(String location) {
+		if (!FileHandler.SignFile.getFile().contains("signs")) {
+			FileHandler.SignFile.getFile().createSection("signs");
+		}
+
+		ConfigurationSection config = FileHandler.SignFile.getFile().getConfigurationSection("signs");
+		if (config.contains(location)) {
+			FileHandler.SignFile.getFile().getConfigurationSection("signs").getKeys(false).remove(location);
 			FileHandler.SignFile.saveFile();
 		}
 
