@@ -19,6 +19,7 @@ public class GameCommand implements CommandExecutor {
 		gameClasses.add(new LeaveCommand());
 		gameClasses.add(new StartCommand());
 		gameClasses.add(new StopCommand());
+		gameClasses.add(new ListCommand());
 	}
 	
 	/** Protected **/
@@ -28,11 +29,18 @@ public class GameCommand implements CommandExecutor {
 				MessageUtil.sendTextMessage(sender, "notEnoughArgs");
 				return true;
 			}
-			
+
+			GameClass seleced = null;
 			for(GameClass gameClass : gameClasses){
 				if(gameClass.getCommand().equalsIgnoreCase(args[0])){
 					gameClass.run(sender, cmd, CommandLabel, args);
+					
+					seleced = gameClass;
 				}
+			}
+			
+			if(seleced == null){
+				MessageUtil.sendTextMessage(sender, "commandNotFound");
 			}
 		}
 		
