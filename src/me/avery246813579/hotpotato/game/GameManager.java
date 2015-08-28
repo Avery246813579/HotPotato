@@ -170,6 +170,9 @@ public class GameManager {
 		gameState = GameState.End;
 
 		for (GamePlayer gp : gamePlayers) {
+			for(GamePlayer gamePlayer : gamePlayers){
+				gamePlayer.getPlayer().showPlayer(gp.getPlayer());
+			}
 			gp.resetPlayerManually();
 		}
 
