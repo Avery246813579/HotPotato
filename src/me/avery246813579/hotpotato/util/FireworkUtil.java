@@ -50,12 +50,13 @@ public class FireworkUtil {
 	private static Method getMethod(Class<?> cl, String method) {
 		for (Method m : cl.getMethods()) {
 			if (m.getName().equals(method)) {
-				return m;
+				return m;	
+				
 			}
 		}
 		return null;
 	}
-
+	
 	public static FireworkEffect getRandomEffect() {
 		Random generator = new Random();
 		int type = generator.nextInt(9) + 1;

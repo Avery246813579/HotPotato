@@ -91,8 +91,8 @@ public class GamePlayer {
 	public void loadPlayer(){
 		player.getInventory().setContents(playerInventory);
 		player.getInventory().setArmorContents(armorInventory);
-		player.setFlying(isFlying);
 		player.setAllowFlight(canFly);
+		player.setFlying(isFlying);
 		player.teleport(lastLocation);
 		player.setGameMode(gameMode);
 		player.setFoodLevel(hunger);

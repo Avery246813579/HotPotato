@@ -4,7 +4,6 @@ import me.avery246813579.hotpotato.HotPotato;
 import me.avery246813579.hotpotato.game.GameManager;
 import me.avery246813579.hotpotato.game.GamePlayer;
 import me.avery246813579.hotpotato.game.GameState;
-import me.avery246813579.hotpotato.util.ItemUtil;
 import me.avery246813579.hotpotato.util.MessageUtil;
 
 import org.bukkit.entity.Player;
@@ -207,7 +206,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onItemConsume(PlayerItemConsumeEvent event){
-		if(event.getItem().isSimilar(ItemUtil.potato())){
+		if (HotPotato.findGame((Player) event.getPlayer()) != null) {
 			event.setCancelled(true);
 		}
 	}

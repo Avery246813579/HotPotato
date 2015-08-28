@@ -49,7 +49,7 @@ public class Game {
 	}
 
 	public Location getSpawn() {
-		if (currentSpawn == (spawns.size() - 1)) {
+		if (currentSpawn >= (spawns.size() - 1)) {
 			currentSpawn = 0;
 		}
 

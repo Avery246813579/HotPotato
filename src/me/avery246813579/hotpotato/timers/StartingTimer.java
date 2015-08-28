@@ -32,7 +32,7 @@ public class StartingTimer extends GameTimer{
 
 	@Override
 	protected void onRunnableTick(int timeLeft) {
-		if((int)(FileHandler.ConfigFile.getFile().getInt("maxPlayers") * .75) <= Bukkit.getOnlinePlayers().length && timeLeft > (int)(timeLeft * 25)){
+		if((int)(FileHandler.ConfigFile.getFile().getInt("maxPlayers") * .75) <= Bukkit.getOnlinePlayers().size() && timeLeft > (int)(timeLeft * 25)){
 			timeLeft = (int)(timeLeft * .25);
 		}
 		

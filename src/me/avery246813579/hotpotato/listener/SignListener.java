@@ -20,7 +20,7 @@ public class SignListener implements Listener {
 			return;
 		}
 
-		if (!event.getLine(0).equalsIgnoreCase("[arena]") || event.getLine(1).isEmpty()) {
+		if (!event.getLine(0).equalsIgnoreCase("[hotpotato]") || event.getLine(1).isEmpty()) {
 			return;
 		}
 
