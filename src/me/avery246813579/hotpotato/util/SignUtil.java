@@ -55,13 +55,22 @@ public class SignUtil {
 		for (String location : FileHandler.SignFile.getFile().getConfigurationSection("signs").getKeys(false)) {
 			String game = FileHandler.SignFile.getFile().getString("signs." + location);
 
-			if (parseLocation(location) != null) {
-				if (parseLocation(location).getBlock().getState().getType() == Material.SIGN || parseLocation(location).getBlock().getState().getType() == Material.WALL_SIGN
-						|| parseLocation(location).getBlock().getState().getType() == Material.SIGN_POST) {
-					updateSign(parseLocation(location), game);
-					signs.put(parseLocation(location), game);
+			Location actualLocation = parseLocation(location);
+			try {
+				if (actualLocation != null) {
+					if (actualLocation.getBlock() != null) {
+						if (parseLocation(location).getBlock().getState().getType() == Material.SIGN || parseLocation(location).getBlock().getState().getType() == Material.WALL_SIGN
+								|| parseLocation(location).getBlock().getState().getType() == Material.SIGN_POST) {
+							updateSign(parseLocation(location), game);
+							signs.put(parseLocation(location), game);
+						}
+					} else {
+						deleteSign(location);
+					}
+				} else {
+					deleteSign(location);
 				}
-			}else{
+			} catch (Exception ex) {
 				deleteSign(location);
 			}
 		}
@@ -99,7 +108,7 @@ public class SignUtil {
 			signs.remove(location);
 		}
 	}
-	
+
 	public static void deleteSign(String location) {
 		if (!FileHandler.SignFile.getFile().contains("signs")) {
 			FileHandler.SignFile.getFile().createSection("signs");
