@@ -21,15 +21,19 @@ public class StartCommand extends GameClass {
 	public void runCommand(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 
-		if (HotPotato.findGame(player) == null) {
-			MessageUtil.sendTextMessage(sender, "noArenaFound");
-			return;
-		}
+		if (args.length == 1) {
+			MessageUtil.sendTextMessage(sender, "notEnoughArgs");
+		} else {
+			if (HotPotato.findGame(player) == null) {
+				MessageUtil.sendTextMessage(sender, "noArenaFound");
+				return;
+			}
 
-		GameManager gameManager = HotPotato.findGame(args[1]);
-		gameManager.setForceStart(true);
-		for(GamePlayer gamePlayer : gameManager.getGamePlayers()){
-			MessageUtil.sendTextMessage(gamePlayer.getPlayer(), "forceStart", player.getName());
+			GameManager gameManager = HotPotato.findGame(args[1]);
+			gameManager.setForceStart(true);
+			for (GamePlayer gamePlayer : gameManager.getGamePlayers()) {
+				MessageUtil.sendTextMessage(gamePlayer.getPlayer(), "forceStart", player.getName());
+			}
 		}
 	}
 }
