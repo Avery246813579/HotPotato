@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import me.avery246813579.hotpotato.HotPotato;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -20,6 +21,26 @@ public abstract class GameFile {
 		getFile().options().copyDefaults(true);
 		saveFile();
 	}
+	
+	public void forceReload(){
+		if(configFile == null){
+			reloadFile();
+		}
+		InputStream defConfigSteam = HotPotato.getPlugin().getResource(fileName);
+		if (defConfigSteam != null) {
+			@SuppressWarnings("deprecation")
+			YamlConfiguration cf = YamlConfiguration.loadConfiguration(defConfigSteam);
+
+			for(String string : cf.getConfigurationSection("").getKeys(false)){
+				Bukkit.getLogger().info("Contains: " + string);
+				if(!configFile.contains(string)){
+					Bukkit.getLogger().info("NO Contains: " + string);
+					configFile.set(string, cf.get(string));
+					saveFile();
+				}
+			}
+		}
+	}
 
 	public void reloadFile() {
 		if (file == null) {
@@ -30,6 +51,7 @@ public abstract class GameFile {
 
 		InputStream defConfigSteam = HotPotato.getPlugin().getResource(fileName);
 		if (defConfigSteam != null) {
+			@SuppressWarnings("deprecation")
 			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigSteam);
 			defConfig.setDefaults(defConfig);
 		}

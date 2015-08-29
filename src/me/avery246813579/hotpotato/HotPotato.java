@@ -42,6 +42,10 @@ public class HotPotato extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
 
+		/** Force Reloads File **/
+		FileHandler.TextFile.forceReload();
+		FileHandler.ConfigFile.forceReload();
+
 		/** Loads Commands **/
 		GameCommand command = new GameCommand();
 		getCommand("hotpotato").setExecutor(command);
